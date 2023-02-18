@@ -1,0 +1,25 @@
+version: '3.6'
+services:
+
+  rlt_service:
+    platform: linux/amd64
+    container_name: poc-rlt-service
+    build:
+      context: ./
+      dockerfile: Dockerfile.local
+    ports:
+      - 3300:3000
+    env_file:
+      - .env.local
+    entrypoint:
+      - sh
+      - -c
+      - "sh entrypoint.local.sh"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    restart: always
+
+networks:
+  default:
+    driver: bridge
