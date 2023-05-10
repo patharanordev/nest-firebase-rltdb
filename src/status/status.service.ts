@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin';
+import { ProviderInfoDto } from './dtos/provider.dto';
 
 @Injectable()
 export class StatusService {
@@ -20,6 +21,31 @@ export class StatusService {
           {
             status: 'payment-success',
             timedstamp: timestamp,
+          },
+          (err) => {
+            if (err) {
+              reject(err.message);
+            } else {
+              resolve('Done');
+            }
+          },
+        );
+    });
+
+    return result;
+  }
+
+  async updateProvider(body: ProviderInfoDto): Promise<any> {
+    const rootRef = admin.database().ref('/');
+
+    const result = new Promise<string>((resolve, reject) => {
+      rootRef
+        .child('dev')
+        .child('provider-portal')
+        .child(body.providerId)
+        .set(
+          {
+            ...body,
           },
           (err) => {
             if (err) {
