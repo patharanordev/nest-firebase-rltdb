@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { MessageContentDto } from './dto/message-content.dto';
-import { MessagingPayload } from './interface/messages.interface';
+import { 
+  MessageDataDto,
+  MessageDataWithTopicDto,
+  MessageContentDto, 
+  MessageContentWithTopicDto,
+} from './dto/message-content.dto';
+import { Messaging } from './interface/messages.interface';
 
 import * as admin from 'firebase-admin';
 
@@ -13,46 +18,43 @@ export class MessagesService {
     return null;
   }
 
-  async sendWithData(messageContent: MessageContentDto) {
-    try {
-      const topic = 'TestFCM';
-
-      const message = {
-        // token: '....',
-        data: {
-          score: '850',
-          time: '2:45'
-        },
-        topic: topic
-      };
-
-      const result = await admin.messaging().send(message)
-      .then((response) => ({ data: response, error: null }))
-      .catch((error) => ({ data: null, error }));
-
-      return result
-
-    } catch (error) {
-      return { data: null, error };
-    }
+  async sendData(msg: MessageDataDto) {
+    return await this.send({
+      token: msg.token,
+      data: msg.data,
+    })
   }
 
-  async sendWithNotification(messageContent: MessageContentDto) {
+  async sendDataWithTopic(msg: MessageDataWithTopicDto) {
+    return await this.send({
+      topic: msg.topic,
+      data: msg.data,
+    })
+  }
+
+  async sendNotificationWithTopic(msgWithTopic: MessageContentWithTopicDto) {
+    return await this.send({
+      condition: `\'${msgWithTopic.topic}\' in topics`,
+      notification: {
+        title: msgWithTopic.title,
+        body: msgWithTopic.body,
+      },
+    })
+  }
+
+  async sendNotification(msg: MessageContentDto) {
+    return await this.send({
+      token: msg.token,
+      notification: {
+        title: msg.title,
+        body: msg.body,
+      },
+    })
+  }
+
+  async send(msg: Messaging) {
     try {
-      // Define a condition which will send to devices which are subscribed
-      // to either the Google stock or the tech industry topics.
-      const condition = '\'TestFCM\' in topics';
-
-      const message = {
-        // token: '....',
-        notification: {
-          title: 'Test sent notification',
-          body: messageContent.orderId,
-        },
-        condition: condition
-      };
-
-      const result = await admin.messaging().send(message)
+      const result = await admin.messaging().send(msg)
       .then((response) => ({ data: response, error: null }))
       .catch((error) => ({ data: null, error }));
 

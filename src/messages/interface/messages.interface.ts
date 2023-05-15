@@ -158,3 +158,37 @@ export interface MessagingPayload {
    */
   notification?: NotificationMessagePayload;
 }
+
+export interface MessagingData {
+  token: string;
+  data: {
+    [x: string]: string;
+  }
+};
+
+export interface MessagingDataWithTopic {
+  topic: string;
+  data: {
+    [x: string]: string;
+  }
+};
+
+export interface NotificationInfo {
+  title: string;
+  body: string;
+};
+
+export interface MessagingNotification {
+  token: string;
+  notification: NotificationInfo
+}
+
+export interface MessagingNotificationWithTopic {
+  condition: string;
+  notification: NotificationInfo
+}
+
+export type Messaging = MessagingNotification 
+| MessagingNotificationWithTopic
+| MessagingDataWithTopic
+| MessagingData;
