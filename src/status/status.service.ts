@@ -5,16 +5,16 @@ import { ProviderInfoDto, ProviderStatusInfoDto } from './dtos/provider.dto';
 
 @Injectable()
 export class StatusService {
-  private readonly rootRef = admin.database().ref('/');
   async updateStatus(id: string): Promise<string> {
 
     const result = new Promise<string>((resolve, reject) => {
+      const rootRef = admin.database().ref('/');
       const timezone = new Date().getTimezoneOffset() * 60000; //offset in milliseconds
       const timestamp = new Date(Date.now() - timezone)
         .toISOString()
         .slice(0, -1);
 
-      this.rootRef
+      rootRef
         .child('dev')
         .child('payment')
         .child(id)
@@ -37,9 +37,9 @@ export class StatusService {
   }
 
   async updateProvider(body: ProviderInfoDto): Promise<any> {
-
+    const rootRef = admin.database().ref('/');
     const result = new Promise<string>((resolve, reject) => {
-      this.rootRef
+      rootRef
         .child('dev')
         .child('provider-portal')
         .child(body.providerId)
@@ -61,8 +61,9 @@ export class StatusService {
   }
 
   async setProviderRealTimeStatus(body: ProviderStatusInfoDto): Promise<any> {
+    const rootRef = admin.database().ref('/');
     const result = new Promise<string>((resolve, reject) => {
-      this.rootRef
+      rootRef
         .child('Develop')
         .child('providerSession')
         .child(body.providerId)
