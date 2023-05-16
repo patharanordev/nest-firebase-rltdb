@@ -66,6 +66,7 @@ export class StatusService {
         .child('Develop')
         .child('providerSession')
         .child(body.providerId)
+        .child('props')
         .child('status')
         .set(body.status,
           (err) => {
