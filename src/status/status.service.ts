@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin';
 import { resolve } from 'path';
 import { ProviderInfoDto, ProviderStatusInfoDto } from './dtos/provider.dto';
+import { ProviderStatus } from './enums/provider.enum';
 
 @Injectable()
 export class StatusService {
@@ -61,15 +62,16 @@ export class StatusService {
   }
 
   async setProviderRealTimeStatus(body: ProviderStatusInfoDto): Promise<any> {
+    const { providerId, status } = body
     const rootRef = admin.database().ref('/');
     const result = new Promise<string>((resolve, reject) => {
       rootRef
         .child('Develop')
         .child('providerSession')
-        .child(body.providerId)
+        .child(providerId)
         .child('props')
         .child('status')
-        .set(body.status,
+        .set(status,
           (err) => {
             if (err) {
               reject(err.message);
@@ -77,6 +79,22 @@ export class StatusService {
               resolve('Done');
             }
           });
+
+      if (status === ProviderStatus.ConsultationFinished) {
+        rootRef
+          .child('Develop')
+          .child('providerSession')
+          .child(providerId)
+          .child('orders')
+          .child('current')
+          .set(null, err => {
+            if (err) {
+              reject(err.message);
+            } else {
+              resolve('Done');
+            }
+          })
+      }
     });
 
     return result;

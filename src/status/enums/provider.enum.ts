@@ -2,6 +2,7 @@ export enum ProviderStatus {
   Available = 'Available',
   Reserved = 'Reserved',
   Consulting = 'Consulting',
+  ConsultationFinished = 'ConsultationFinished',
   Offline = 'Offline',
 }
 
